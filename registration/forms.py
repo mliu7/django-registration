@@ -7,6 +7,7 @@ Forms and validation code for user registration.
 from django.contrib.auth.models import User
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.forms import AuthenticationForm
 
 
 # I put this on all required fields, because it's easier to pick up
@@ -15,6 +16,8 @@ from django.utils.translation import ugettext_lazy as _
 # lands in trunk, this will no longer be necessary.
 attrs_dict = {'class': 'required'}
 
+class UsernameOrEmailAuthenticationForm(AuthenticationForm):
+    username = forms.CharField(label=_("Username or Email"), max_length=50)
 
 class RegistrationForm(forms.Form):
     """
