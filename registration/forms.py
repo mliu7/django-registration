@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate
 
 
 # I put this on all required fields, because it's easier to pick up
@@ -18,6 +19,26 @@ attrs_dict = {'class': 'required'}
 
 class UsernameOrEmailAuthenticationForm(AuthenticationForm):
     username = forms.CharField(label=_("Username or Email"), max_length=50)
+
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if username and password:
+            self.user_cache = authenticate(username=username, password=password)
+            if self.user_cache is None:
+                raise forms.ValidationError(_("Please enter either your email or username along with your correct password."))
+            elif not self.user_cache.is_active:
+                raise forms.ValidationError(_("This account is inactive."))
+        self.check_for_test_cookie()
+        return self.cleaned_data
+
+    def check_for_test_cookie(self):
+        if self.request and not self.request.session.test_cookie_worked():
+            raise forms.ValidationError(
+                _("Your Web browser doesn't appear to have cookies enabled. "
+                  "Cookies are required for logging in."))
+
 
 class RegistrationForm(forms.Form):
     """
