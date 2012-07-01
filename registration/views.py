@@ -95,7 +95,7 @@ def activate(request, backend,
 def register(request, backend, success_url=None, form_class=None,
              disallowed_url='registration_disallowed',
              template_name='registration/registration_form.html',
-             extra_context=None):
+             extra_context=None, initial_form_values=None):
     """
     Allow a new user to register an account.
 
@@ -151,6 +151,10 @@ def register(request, backend, success_url=None, form_class=None,
         callable object in this dictionary will be called to produce
         the end result which appears in the context.
 
+    ``initial_form_values``
+        A dictionary of initial values to pass into the form for the
+	GET.
+
     ``success_url``
         URL to redirect to after successful registration. Must be a
         value which can legally be passed to
@@ -191,7 +195,7 @@ def register(request, backend, success_url=None, form_class=None,
             else:
                 return redirect(success_url)
     else:
-        form = form_class()
+        form = form_class(initial=initial_form_values) if initial_form_values != None else form_class()
     
     if extra_context is None:
         extra_context = {}
