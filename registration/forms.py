@@ -9,6 +9,7 @@ you're using a custom model.
 """
 
 
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -118,3 +119,7 @@ class RegistrationFormNoFreeEmail(RegistrationForm):
         if email_domain in self.bad_domains:
             raise forms.ValidationError(_("Registration using free email addresses is prohibited. Please supply a different email address."))
         return self.cleaned_data['email']
+
+
+class UsernameOrEmailAuthenticationForm(AuthenticationForm):
+    username = forms.CharField(label=_("Username or Email"), max_length=50)
